@@ -6,7 +6,7 @@
 
 :rabbit: :tea:
 
-This system start with a web server that leads to the wonderland machine where many different users live like the **rabbit** and the mad **hatter**. We first read the clues on the web page and follow the white rabbit down the rabbit whole of the websites directories until we find a key in the source code that lets us SSH onto the system as **alice**. There are 3 stages to the privilege escalation which is cool and each one is slightly different. We have to go and visit each users home directory to see what goodies they have there and what each one of them can execute and do in order for us to escalate our privileges to root.
+This system starts with a web server that leads to the wonderland linux system where many different users such as **alice** and were a few others live like the **rabbit** and the mad **hatter**. We first look for the clues on the web servers pages and follow the white rabbit down the rabbit whole of the websites directories until we find a key in the source code that lets us SSH onto the system as **alice**. There are 3 stages to the privilege escalation which are cool and each one uses a slightly different technique. We have to go and visit each users home directory to see what goodies they have there and what each one of them can execute and do in order for us to escalate our privileges to root.
 
 ## Initial recon
 ### Nmap scan
@@ -16,7 +16,7 @@ We start initial active recon with an fast (-T4) aggressive (-A) TCP SYN (-sS) v
 sudo nmap -sS -sV -A -T4 -vv -p- -oA syn_ver_agg_fast_alltcp_ports 10.10.85.247
 ```
 
-I also did a quick version UDP scan (-sUV) of the top 1000 ports.
+We can also run a quick version UDP scan (-sUV) of the top 1000 ports to see if there is any interesting UDP ports.
 ```
 sudo namp -sUV -vv 10.10.85.247 -oA udp_ver_top1000_scan
 ```
@@ -98,7 +98,7 @@ Service detection performed. Please report any incorrect results at https://nmap
 
 ## Web server enumeration
 
-We start by manually visiting and browsing the website. There isn't much there. Viewing the landing pages source code we find the image directory **/img** that has two other images of alice, one in png and the other in jpg. 
+We start by manually visiting and browsing the website. There isn't much there, viewing the landing pages source code we find the image directory **/img** that has a few other images. 
 
 ![Wonderland Web page](/Images/thm_wonderland_web_1.jpg)
 
@@ -107,9 +107,9 @@ Download all the image files and run **binwalk, exiftool and steghide** on the i
 
 ```
 # Check for hints in the metadata of the image using exiftool
-./exiftool white_rabbit_1.jpg 
-./exiftool alice_door.png
-./exiftool alice_door.jpg
+exiftool white_rabbit_1.jpg 
+exiftool alice_door.png
+exiftool alice_door.jpg
 
 # Check to see if there are any files hidden in the images using binwalk.
 binwalk white_rabbit_1.jpg
@@ -142,7 +142,7 @@ Run a dirbuster scan to find also find any hidden directories and file paths on 
 sudo dirbuster
 ```
 
-* Tip - set the threads to **40 to 50** and set the scan to not **Be Recursive** directory search to speed up the dirbuster scan.
+* Tip - set the threads to **40 to 50 or more** and set the scan to not **Be Recursive** to speed up the dirbuster scan.
 * Tip - a good wordlist to use is located in **/usr/share/dirbuster/wordlists/directory-list-lowercase-2.3-medium.txt** on kali linux
 
 ![Dirbuster Scan](/Images/thm_wonderland_dirbuster_1.jpg)
@@ -153,7 +153,7 @@ There are two interesting folder paths returned from the dirbuster scan.
 
 ![Keep going clue](/Images/thm_wonderland_web_2.jpg)
 
-The **/r/** URL path leads to an interesting page, while **/poem/** URL path leads to "The Jabberwocky" poem text on the web page.
+The **/r/** URL path leads to an interesting page, while **/poem/** URL path leads to **"The Jabberwocky"** poem text on the web page.
 Remember the hint _**"folllow the r a b b i t"**_ in the hint.txt file we found earlier will help you solve the URL path we need to find which is 
 **http://10.10.85.247/r/a/b/b/i/t/**
 
@@ -163,7 +163,7 @@ View the page source code of this final page to find an SSH key for alice hidden
 
 
 ## Privilege Escalation
-### Stage 1 - Alice
+### Stage 1 - alice to rabbit
 
 The nmap scan revealed that SSH port 22 was open, and what we found in the source code of the final web page looks like an SSH credentials so if you give it a try you will be able to log into the system.
 
@@ -206,8 +206,8 @@ chmod +x linpeas.sh
 The linpeas scan as alice did reveal something interesting which is the capabilities set for perl. This can lead to privilege escalation as we will describe later.
 We cannot use this now as alice is not allowed to run perl.
 
-There is a way to escalate our privileges to the **rabbit** user by leveraging the python script we found earlier _**/home/alice/walrus_and_the_carpenter.py**_
-If you _cat_ the file you will see it **imports random** library. Python loads the library by first checking where it is located by using the $PATH system variables. You can check the path variable by using the following command in your shell.
+There is a way to escalate our privileges to the **rabbit** user by leveraging the python script we found earlier **/home/alice/walrus_and_the_carpenter.py**
+If you _cat_ the file you will see it **imports random** library. Python loads the library by first checking where it is located by using the python path system variables. You can check the path variable by using the following command in your shell.
 
 ```
 python3 -c 'import sys; print(sys.path)';
@@ -216,7 +216,7 @@ python3 -c 'import sys; print(sys.path)';
 ![Python path](/Images/thm_wonderland_python_1.jpg)
 
 
-As you can see it will first check the current working directory '' and then proceed to check '/usr/linb/python36.zip' and on and on. So you can simply create a new file called **random.py** and insert the following code into it which will then execute and open a shell as the user that executes the python script the next time.
+As you can see it will first check the current working directory '' and then proceed to check '/usr/linb/python36.zip' and on and on. So you can simply create a new file called random.py and insert the following code into it which will then execute and open a shell as the user that executes the python script the next time.
 
 ```python
 import os
@@ -232,17 +232,17 @@ As you can see when we run the sudo command below we get a bash shell as the use
 sudo -u rabbit /usr/bin/python3.6 /home/alice/walrus_and_the_carpenter.py
 ```
 
-### Stage 2 - Rabbit
+### Stage 2 - rabbit to hatter
 
-You can run linpeas script again as the **rabbit** user and it will reveal the **teaParty** file which has its SUID bits set and it will also show the perl capabilities we found earlier, however rabbit can't run perl also so we will investigate the teaParty file further.
+You can run linpeas script again as the **rabbit** user and it will reveal the **teaParty** file which has its SUID bits set and it will also show the perl capabilities we found earlier, however rabbit can't run perl also so we will continue investigate the teaParty binary file further.
 
 ![teaParty file](/Images/thm_wonderland_rabbit_2.jpg)
 
-As you can see the SUID bit is set on this file which can help us escalate our privileges. It seems to be a standard C executable file that when we cat it we can see that its executing the **date** linux function. 
+As you can see the SUID bit is set on this file which can help us escalate our privileges. It seems to be a standard C executable binary file that when we cat it we can see that its executing the **date** linux function. 
 
 ![teaParty file date output](/Images/thm_wonderland_rabbit_3.jpg)
 
-Similar to the python escalation earlier we can create a new bash file called date in our /tmp folder and then manipulate the $PATH variable to execute our date function first in order to escalate our privileges using this teaParty binary file.
+Similar to the python escalation earlier we can create a new bash file called date in our **/tmp** folder and then manipulate the **$PATH** variable to execute our date function first in order to escalate our privileges using this teaParty binary file.
 
 ```
 # Change the path variable to include /tmp folder
@@ -255,29 +255,29 @@ nano date
 
 ![Setting $PATH variable](/Images/thm_wonderland_rabbit_4.jpg)
 
-Insert the folloing code into the date script
+Insert the folloing code into the date script.
 ```bash
 #!/bin/bash
 /bin/bash
 ```
 
-Change its file permissions to be able to execute
+Change its file permissions to be able to execute.
 
 ```bash
 chmod +x /tmp/date
 ```
 
-Finally then execute the teaParty binary file and you should be the user **hatter** now. If you check the hatter's home directory you will find a password.txt file which is his SSH key that you can use to log into his account via SSH.
+Finally execute the teaParty binary file and you should be the user **hatter** now. If you check the hatter's home directory you will find a password.txt file which is the hatters SSH key that you can use to log into his account via SSH.
 
 ![Rabbit to hatter](/Images/thm_wonderland_rabbit_5.jpg)
 
-### Stage 3 - Hatter
+### Stage 3 - hatter to root
 
-Remember that perl capability we found earlier using linpeas script. Lets try to see if the **hatter** user can run perl, which it seems like he can.
+Remember that perl capabiliies we found earlier using linpeas script. Lets try to see if the **hatter** user can run perl, which it seems like he can.
 
 If you visit the following [GTFO link](https://gtfobins.github.io/gtfobins/perl/#capabilities) you will find a command we can use to escalate our privileges to root.
 
-* Tip - This is a great article that explains how to exploit linux capabilities: [Linux privilege escalation using capabilities](https://www.hackingarticles.in/linux-privilege-escalation-using-capabilities/)
+* Tip - This is a great article that explains capabilities and how to exploit them: [Linux privilege escalation using capabilities](https://www.hackingarticles.in/linux-privilege-escalation-using-capabilities/)
 
 ```
 perl -e 'use POSIX qw(setuid); POSIX::setuid(0); exec "/bin/sh";'
