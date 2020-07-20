@@ -355,5 +355,5 @@ Well I found two easy ways to gain root on this machine. It did involve a bit of
 
 There was this tiny bit of loot in the /var/mail/root directory. Guess we can expect a slightly more challanging system on Kioptrix Level 2 :smile:
 
-[Kioptrix 1 Loot](/Images/vh_kioptrix1_loot.jpg)
+![Kioptrix 1 Loot](/Images/vh_kioptrix1_loot.jpg)
 
