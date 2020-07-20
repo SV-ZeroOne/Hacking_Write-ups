@@ -4,7 +4,7 @@
 
 [TryHackMe Wonderland room link](https://tryhackme.com/room/wonderland)
 
-rabbit2 :hole:
+:rabbit2 :hole:
 
 This system starts with a web server that leads to the wonderland linux system where many different users such as **alice** and were a few others live like the **rabbit** and the mad **hatter**. We first look for the clues on the web servers pages and follow the white rabbit down the rabbit whole of the websites directories until we find a key in the source code that lets us SSH onto the system as **alice**. There are 3 stages to the privilege escalation which are cool and each one uses a slightly different technique. We have to go and visit each users home directory to see what goodies they have there and what each one of them can execute and do in order for us to escalate our privileges to root.
 
