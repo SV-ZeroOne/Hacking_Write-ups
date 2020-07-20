@@ -1,6 +1,6 @@
 # VulnHub - Kioptrix level 1 writeup 
 
-![Kioptril Level 1 Header](/Images/kioptrix1_header.png)
+![Kioptrix Level 1 Header](/Images/kioptrix1_header.png)
 
 [VulnHub Image Link](https://www.vulnhub.com/entry/kioptrix-level-1-1,22/)
 
@@ -114,7 +114,7 @@ OS and Service detection performed. Please report any incorrect results at https
 # Nmap done at Sun Jul 19 10:03:08 2020 -- 1 IP address (1 host up) scanned in 134.83 seconds
 ```
 
-There are a few interesting ports and servers that we can enumerate for vulnurabilities.
+There are a few interesting ports and servers that we can enumerate for vulnerabilities.
 ```
 22/tcp    open  ssh         syn-ack ttl 64 OpenSSH 2.9p2 (protocol 1.99)
 80/tcp    open  http        syn-ack ttl 64 Apache httpd 1.3.20 ((Unix)  (Red-Hat/Linux) mod_ssl/2.8.4 OpenSSL/0.9.6b)
@@ -160,13 +160,13 @@ Service detection performed. Please report any incorrect results at https://nmap
 # Nmap done at Sun Jul 19 10:30:18 2020 -- 1 IP address (1 host up) scanned in 1165.20 seconds
 ```
 
-Nothing much of the ordenary for UDP ports, looks as expected with RPC and SMB ports open.
+Nothing much of the ordinary for UDP ports, looks as expected with RPC and SMB ports open.
 
 ## Web Server enumeration (Ports 80 and 443)
 
 Going to the web servers default directory reveals the standard Apache Web Page running on Red Hat Linux.
 
-Lets do some enumration web server using nikto and dirbuster.
+Lets do some enumeration web server using nikto and dirbuster.
 
 The dirbuster scan did not reveal much. There was an mrtg (Multi Router Traffic Grapher) tool installed on the web server but it did not reveal much.
 
@@ -230,7 +230,7 @@ nikto -h 10.0.2.15 | tee nikto_scan.txt
 
 It appears that the Apache Server is quite outdated and there seems to be quite a few attack vectors we can make use of.
 
-Of particular interest is this remote buffer overflow that could lead to a shell? Lets invetigate it further.
+Of particular interest is this remote buffer overflow that could lead to a shell? Lets investigate it further.
 > + mod_ssl/2.8.4 - mod_ssl 2.8.7 and lower are vulnerable to a remote buffer overflow which may allow a remote shell. http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2002-0082
 
 [CVE-2002-0082 Details](https://nvd.nist.gov/vuln/detail/CVE-2002-0082)
@@ -284,7 +284,7 @@ run
 
 ![Metasploit SMB Version Scan](/Images/vh_kioptrix1_smb_msf1.jpg)
 
-This tells us that its runnning **Unix (Samba 2.2.1a)**
+This tells us that its running **Unix (Samba 2.2.1a)**
 
 What if you cant use metasploit for some reason?
 
