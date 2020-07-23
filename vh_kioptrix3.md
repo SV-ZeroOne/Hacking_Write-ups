@@ -278,7 +278,7 @@ sudo bash
 
 ![HT editor /etc/sudoers file](/Images/vh_kioptrix3_privesc_1.jpg)
 
-![Privilege Escalation](/Images/vh_kioptrix3_privesc_1.jpg)
+![Privilege Escalation](/Images/vh_kioptrix3_privesc_2.jpg)
 
 As you can see we can now easily get root and read the /root/Congrats.txt file left by loneferret.
 
