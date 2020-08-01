@@ -1,6 +1,6 @@
-# TryHackMe - UltraTech writeup 
+# TryHackMe or VulnHub - MachineName writeup 
 
-![Header image](/Images/dogcat_header.png)
+![Header image](/Images/someimage_header.png)
 
 [Room or VulnHub image link](https://127.0.0.1)
 
