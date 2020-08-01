@@ -1,8 +1,8 @@
-# TryHackMe - UltraTech writeup 
+# Vulhub - Kioptrix 4 writeup 
 
 ![Header image](/Images/kioptrix4_header.png)
 
-[Room or VulnHub image link](https://www.vulnhub.com/entry/kioptrix-level-13-4,25/)
+[VulnHub image link](https://www.vulnhub.com/entry/kioptrix-level-13-4,25/)
 
 :hole: :computer:
 
@@ -286,13 +286,13 @@ ps aux
 
 This blog post by Bernardo Dag exploits the exploit pretty well.
 
-![Blog link](https://bernardodamele.blogspot.com/2009/01/command-execution-with-mysql-udf.html)
+[Blog link](https://bernardodamele.blogspot.com/2009/01/command-execution-with-mysql-udf.html)
 
 Basically we can use the UDF functionality within MySQL to execute system commands on the underlying operating system.
 
 To do so, we need to download the lib_mysqludf_sys.so library, which will allow us to perform commands to escalate our privileges to root.
 
-![lib_muysqludf_sys.so download repo](https://github.com/mysqludf/lib_mysqludf_sys)
+[lib_muysqludf_sys.so download repo](https://github.com/mysqludf/lib_mysqludf_sys)
 
 We can use the following command to see if we have the correct library on the system.
 ```
