@@ -169,6 +169,7 @@ get FLAG.txt
 
 Looking around the ftp folder we find our second flag and a pub directory that is empty.
 > FLAG{Whoa this is unexpected} - 10 Points
+
 ![Anonymous FTP enumeration](/Images/vh_rickdiculous_ftp.jpg)
 
 ### Port 22
@@ -262,7 +263,7 @@ wget 192.168.56.133:8181/journal.txt.zip
 wget 192.168.56.133:8181/Safe_Password.jpg
 ```
 
-![Mortys stuff](/Imnages/vh_rickdiculous_morty_journal.jpg)
+![Mortys stuff](/Images/vh_rickdiculous_morty_journal.jpg)
 
 Inspecting the files reveals a password protected zip (journal.txt.zip) and an image called **Safe_Password.jpg** but no password appears in the image, so lets inspect the image file further with **exiftool** to see the metadata and **binwalk** to inspect the actual file headers.
 
