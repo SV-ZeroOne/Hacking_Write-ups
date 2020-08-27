@@ -4,7 +4,7 @@
 
 [VulnHub image link](https://www.vulnhub.com/entry/rickdiculouslyeasy-1,207/)
 
-:hole: :computer:
+:computer: :cat:
 
 ## Introduction 
 
@@ -191,7 +191,7 @@ Inspecting the **robots.txt** reveals a few interesting links.
 The root_shell.cgi link is a rabbit whole, however the tracertool.cgi link seems of interest as it executes the **traceroute** command on the system.
 With a bit of enumeration we try to see if we can get command injection on the machine. Which seems like its possible by providing the semi-colon ; character and followed by a command. I tried to execute a bash and python reverse shell via this cgi page functionality but it appears to be locked down.
 
-[Web Server Enumeration](/Images/vh_rickdiculous_web_1.jpg)
+![Web Server Enumeration](/Images/vh_rickdiculous_web_1.jpg)
 
 There appears to be also another troll feature with the **cat** command being replaced by output of an ascii art cat.
 We can however use the **head** command to view sensitive files like the **/etc/passwd** file to get the Usernames on the system. (The -n parameter on the head command will print the first n lines you specify of the file.)
@@ -229,6 +229,7 @@ This is some custom shell script that doesn't allow for much, but there is a fla
 #### Cockpit Remote Server Monitor (Port 9090)
 
 > Cockpit is an easy-to-use, lightweight and simple yet powerful remote manager for GNU/Linux servers, it’s an interactive server administration user interface that offers a live Linux session via a web browser. It can run on several Linux distributions including Debian, Ubuntu, Fedora, CentOS, RHEL, Arch Linux among others.
+
 [Source Link](https://www.tecmint.com/cockpit-monitor-multiple-linux-servers-via-web-browser/)
 
 Inspecting this reveals that this application is not fully enabled and leads to nowhere. This appears to be another rabbit hole. I did inspect the page and enabled hidden fields but to no avail.
@@ -279,7 +280,7 @@ We find a binary elf file in RickShachez home directory. You can download by spi
 
 ![Ricks Safe](/Images/vh_rickdiculous_ricks_safe.jpg)
 
-While we could reverse engineer the binary file with [ghidra](https://ghidra-sre.org/) to view the assembly and source code, this would take some time. Instead just run the binary safe file and supply the previous flag value of **131333** to reveal another flag and a clue for Ricks password.
+While we could reverse engineer the binary file with [ghidra](https://ghidra-sre.org/) to view the assembly and source code, this would take some time. Instead just run the binary safe file and supply the previous flag value of **131333**  as an argument to reveal another flag and a clue for Ricks password.
 > FLAG{And Awwwaaaaayyyy we Go!} - 20 Points
 
 The clue is that his password contains 1 uppercase character, 1 digit and 1 word in his old bands name which is **"The Flesh Curtains"**.
